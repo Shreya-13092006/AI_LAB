@@ -1,0 +1,310 @@
+# ============================================================
+#                  TIC-TAC-TOE AI AGENT
+# ============================================================
+
+import math
+
+
+# ------------------------------------------------------------
+# PRINT BOARD
+# ------------------------------------------------------------
+
+def print_board(board):
+    print(f"\n {board[0]} | {board[1]} | {board[2]} ")
+    print("---|---|---")
+    print(f" {board[3]} | {board[4]} | {board[5]} ")
+    print("---|---|---")
+    print(f" {board[6]} | {board[7]} | {board[8]} \n")
+
+
+# ------------------------------------------------------------
+# CHECK WIN
+# ------------------------------------------------------------
+
+def check_win(board, player):
+
+    win_conditions = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ]
+
+    for condition in win_conditions:
+
+        if (
+            board[condition[0]] ==
+            board[condition[1]] ==
+            board[condition[2]] ==
+            player
+        ):
+            return True
+
+    return False
+
+
+# ------------------------------------------------------------
+# CHECK DRAW
+# ------------------------------------------------------------
+
+def check_draw(board):
+    return ' ' not in board
+
+
+# ------------------------------------------------------------
+# MINIMAX ALGORITHM
+# ------------------------------------------------------------
+
+def minimax(board, depth, is_maximizing):
+
+    # AI wins
+    if check_win(board, 'O'):
+        return 10 - depth
+
+    # Human wins
+    if check_win(board, 'X'):
+        return depth - 10
+
+    # Draw
+    if check_draw(board):
+        return 0
+
+    # --------------------------------------------------------
+    # AI TURN
+    # --------------------------------------------------------
+
+    if is_maximizing:
+
+        best_score = -math.inf
+
+        for i in range(9):
+
+            if board[i] == ' ':
+
+                # Try AI move
+                board[i] = 'O'
+
+                score = minimax(
+                    board,
+                    depth + 1,
+                    False
+                )
+
+                # Undo move
+                board[i] = ' '
+
+                best_score = max(
+                    best_score,
+                    score
+                )
+
+        return best_score
+
+    # --------------------------------------------------------
+    # HUMAN TURN
+    # --------------------------------------------------------
+
+    else:
+
+        best_score = math.inf
+
+        for i in range(9):
+
+            if board[i] == ' ':
+
+                # Try human move
+                board[i] = 'X'
+
+                score = minimax(
+                    board,
+                    depth + 1,
+                    True
+                )
+
+                # Undo move
+                board[i] = ' '
+
+                best_score = min(
+                    best_score,
+                    score
+                )
+
+        return best_score
+
+
+# ------------------------------------------------------------
+# AI MOVE
+# ------------------------------------------------------------
+
+def ai_move(board):
+
+    best_score = -math.inf
+    best_move = None
+
+    for i in range(9):
+
+        if board[i] == ' ':
+
+            # Try this move
+            board[i] = 'O'
+
+            score = minimax(
+                board,
+                0,
+                False
+            )
+
+            # Undo the move
+            board[i] = ' '
+
+            # Keep the best move
+            if score > best_score:
+
+                best_score = score
+                best_move = i
+
+    # Make the best move
+    board[best_move] = 'O'
+
+    print(
+        f"AI chooses position: {best_move + 1}"
+    )
+
+
+# ------------------------------------------------------------
+# PLAY GAME
+# ------------------------------------------------------------
+
+def play_game():
+
+    # Empty board
+    board = [' ' for _ in range(9)]
+
+    print("\n================================")
+    print("       TIC-TAC-TOE AI")
+    print("================================")
+
+    print("\nYou are: X")
+    print("AI is:   O")
+
+    print("\nPosition numbers:")
+
+    print(" 1 | 2 | 3 ")
+    print("---|---|---")
+    print(" 4 | 5 | 6 ")
+    print("---|---|---")
+    print(" 7 | 8 | 9 ")
+
+    print("\nThe AI uses the Minimax algorithm.")
+    print("The AI will play optimally.")
+
+    # --------------------------------------------------------
+    # GAME LOOP
+    # --------------------------------------------------------
+
+    while True:
+
+        # ====================================================
+        # HUMAN MOVE
+        # ====================================================
+
+        while True:
+
+            try:
+
+                move = int(
+                    input(
+                        "\nYour move (1-9): "
+                    )
+                ) - 1
+
+                # Check range
+                if move < 0 or move > 8:
+
+                    print(
+                        "Invalid position."
+                        " Please choose 1-9."
+                    )
+
+                    continue
+
+                # Check occupied position
+                if board[move] != ' ':
+
+                    print(
+                        "That position is already taken."
+                    )
+
+                    continue
+
+                break
+
+            except ValueError:
+
+                print(
+                    "Invalid input."
+                    " Please enter a number from 1-9."
+                )
+
+        # Make human move
+        board[move] = 'X'
+
+        print_board(board)
+
+        # Check human win
+        if check_win(board, 'X'):
+
+            print("================================")
+            print("          YOU WIN!")
+            print("================================")
+
+            return
+
+        # Check draw
+        if check_draw(board):
+
+            print("================================")
+            print("           DRAW!")
+            print("================================")
+
+            return
+
+        # ====================================================
+        # AI MOVE
+        # ====================================================
+
+        print("AI is thinking...")
+
+        ai_move(board)
+
+        print_board(board)
+
+        # Check AI win
+        if check_win(board, 'O'):
+
+            print("================================")
+            print("          AI WINS!")
+            print("================================")
+
+            return
+
+        # Check draw
+        if check_draw(board):
+
+            print("================================")
+            print("           DRAW!")
+            print("================================")
+
+            return
+
+
+# ------------------------------------------------------------
+# START GAME
+# ------------------------------------------------------------
+
+if __name__ == "__main__":
+    play_game()
