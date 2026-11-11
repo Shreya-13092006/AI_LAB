@@ -1,0 +1,27 @@
+a = input("A room: ")
+b = input("B room: ")
+
+p = input("Vacuum at (A/B): ")
+
+goal = (a == "clean" and b == "clean")
+
+while not goal:
+    if p == "A":
+        if a == "dirty":
+            print("Cleaning A")
+            a = "clean"
+        else:
+            print("Moving to B")
+            p = "B"
+    else:
+        if b == "dirty":
+            print("Cleaning B")
+            b = "clean"
+        else:
+            print("Moving to A")
+            p = "A"
+
+    goal = (a == "clean" and b == "clean")
+
+print("Goal reached")
+print("A:", a, "B:", b)
